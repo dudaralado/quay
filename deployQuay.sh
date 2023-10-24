@@ -137,14 +137,30 @@ else
 fi
 
 if [ "$SSL" == "y" ] ;then
-  sleep 60
-  #curl -X POST -k  https://$FQDN:$QUAY_PORT/api/v1/user/initialize --header 'Content-Type: application/json' --data '{ "username": "quayadmin", "password": "quayadmin", "email": "quayadmin@$FQDN", "access_token": true}'
-  #sleep 10
+
+	COUNT=60
+	BAR_WIDTH=50
+
+	while [ $COUNT -gt 0 ]; do
+			# Calculate the progress bar
+			PROGRESS=$(( 100 - (COUNT * 100 / 120) ))
+			BAR=$(seq -s "─" $((BAR_WIDTH * PROGRESS / 100)) | sed 's/[0-9]//g')
+			SPACES=$(seq -s " " $((BAR_WIDTH - BAR_WIDTH * PROGRESS / 100)) | sed 's/[0-9]//g')
+
+			# Print the status bar
+			echo -ne "Countdown: $COUNT seconds [$BAR$SPACES] $PROGRESS% \r"
+
+			# Wait for one second
+			sleep 1
+
+			# Decrement the countdown
+			let COUNT=COUNT-1
+	done
+
+	echo "Time's up!"
+
   curl -X POST -k  https://$FQDN/api/v1/user/initialize --header 'Content-Type: application/json' --data '{ "username": "quayadmin", "password": "quayadmin", "email": "quayadmin@'$FQDN'", "access_token": true}'
-  #sleep 10
   echo "loging to the registry"
-  #podman login -u quayadmin -p quayadmin $FQDN:$QUAY_PORT #--tls-verify=false --log-level=debug
-  #sleep 15
   podman login -u quayadmin -p quayadmin $FQDN #--tls-verify=false --log-level=debug
   #sleep 15
   #echo ""
@@ -158,10 +174,11 @@ if [ "$SSL" == "y" ] ;then
 
 sleep 25
 
-curl -X GET -H "Content-Type: application/json" -u "quayadmin:quayadmin" "https://$FQDN/api/v1/repository/quayadmin/fedora/manifest/sha256:158d1c036343866773afa7a7d0412f1479f2f78b881d59528ce61fd29a11e95f/security?vulnerabilities=true"|jq |head
+curl -X GET -H "Content-Type: application/json" -u "quayadmin:quayadmin" "https://$FQDN/api/v1/repository/quayadmin/fedora/manifest/sha256:3a1fa4954928d6b8244b36c5de3b6f30d7e6b55227f4f329bba1125a093ae4f9/security?vulnerabilities=true"|jq |head
   #sudo podman logs quay0 > quay0.log
   #sudo podman logs quay1 > quay1.log
 #  rm -rfv $Quay_Certs/{host,wild_card,fqdn}.txt
+sleep 5
 else
   sleep 60
 
