@@ -5,5 +5,3 @@ oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"custo
 oc create secret tls ingressupdate --cert=/home/duda/Quay/ssl_certs/openshiftCluster.cert --key=/home/duda/Quay/ssl_certs/openshiftCluster.key -n openshift-ingress
 
 oc patch ingresscontroller.operator default --type=merge -p '{"spec":{"defaultCertificate": {"name": "ingressupdate"}}}' -n openshift-ingress-operator
-
-
